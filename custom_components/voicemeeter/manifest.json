@@ -1,0 +1,11 @@
+{
+  "domain": "voicemeeter",
+  "name": "Voicemeeter",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://github.com/Skrubbadubba/voicemeeter-ha-integration",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "requirements": ["aiohttp>=3.9.0"],
+  "version": "0.1.0"
+}
