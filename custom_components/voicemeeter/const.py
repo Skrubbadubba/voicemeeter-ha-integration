@@ -18,7 +18,7 @@ KIND_VIRTUAL_STRIPS = {"basic": 1, "banana": 2, "potato": 3}
 KIND_BUSES = {"basic": 2, "banana": 5, "potato": 8}
 
 BUS_LABELS = {
-    "basic": ["A1", "A2", "B1"],
+    "basic": ["A1", "B1"],
     "banana": ["A1", "A2", "A3", "B1", "B2"],
     "potato": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3"],
 }
