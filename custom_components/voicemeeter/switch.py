@@ -107,7 +107,7 @@ class StripRouteSwitch(VoicemeeterEntity, SwitchEntity):
             if strip and strip.label
             else get_strip_label(kind, self._strip_index)
         )
-        bus_label = bus.label or get_bus_label(kind, self._bus_index)
+        bus_label = bus.label if bus and bus.label else get_bus_label(kind, self._bus_index)
         return f"{strip_label} - {bus_label} Toggle"
 
     @property
@@ -115,7 +115,7 @@ class StripRouteSwitch(VoicemeeterEntity, SwitchEntity):
         strip = self._strip
         if not strip:
             return False
-        kind = self.coordinator.data.kind
+        kind = self.coordinator.data.kind if self.coordinator.data else 'banana'
         bus_canonical_label = get_bus_label(kind, self._bus_index).lower()
         return getattr(strip, bus_canonical_label, False)
 

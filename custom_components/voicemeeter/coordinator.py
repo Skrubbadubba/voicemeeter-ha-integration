@@ -45,7 +45,7 @@ class VoicemeeterCoordinator(DataUpdateCoordinator[VoicemeeterState | None]):
     def handle_disconnect(self) -> None:
         """Called when the WebSocket connection is lost."""
         self.connected = False
-        self.async_set_updated_data(None)
+        self.async_update_listeners()
         LOGGER.debug("Voicemeeter coordinator: disconnected, entities now unavailable")
 
     @callback
@@ -55,7 +55,13 @@ class VoicemeeterCoordinator(DataUpdateCoordinator[VoicemeeterState | None]):
 
         if msg_type == "state":
             LOGGER.debug(f"Recieved state: {msg}")
-            self.async_set_updated_data(parse_state_message(msg))
+            old_state = self.data
+            old_kind = old_state.kind if old_state else None
+            parsed_new_state = parse_state_message(msg)
+            self.async_set_updated_data(parsed_new_state)
+            if old_kind and old_kind != parsed_new_state.kind:
+                self.hass.config_entries.async_reload(self.config_entry.entry_id)
+                LOGGER.debug(f"New kind ({parsed_new_state.kind}) recieved, reloading entry")
 
         elif msg_type == "update":
             LOGGER.debug(f"Voicemeeter: recieved update message: {msg}")

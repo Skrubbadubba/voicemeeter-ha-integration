@@ -54,7 +54,7 @@ class VoicemeeterWebSocket:
         self._running = True
         while self._running:
             try:
-                await self._connect()
+                await self._connect_loop()
             except Exception as err:
                 LOGGER.warning("Voicemeeter WS connection error: %s", err)
 
@@ -84,7 +84,7 @@ class VoicemeeterWebSocket:
         else:
             LOGGER.debug("WS send skipped, not connected: %s", data)
 
-    async def _connect(self) -> None:
+    async def _connect_loop(self) -> None:
         """Open a connection and block until it closes."""
         async with aiohttp.ClientSession() as session, session.ws_connect(
             self._url,
@@ -96,13 +96,18 @@ class VoicemeeterWebSocket:
             LOGGER.info("Connected to Voicemeeter companion app at %s", self._url)
 
             async for msg in ws:
+                LOGGER.debug("WS msg type: %s", msg.type)
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     try:
+                        # LOGGER.debug(f"Recieved raw websocket message: {msg.data}")
                         self._on_message(json.loads(msg.data))
                     except Exception as err:
                         LOGGER.error("Failed to handle WS message: %s", err)
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     LOGGER.warning("Voicemeeter WS error frame received")
+                    break
+                elif msg.type in [aiohttp.WSMsgType.CLOSE, aiohttp.WSMsgType.CLOSED, aiohttp.WSMsgType.CLOSING]:
+                    LOGGER.info("Voicemeeter disconnected from companion websocket")
                     break
 
             self._ws = None
