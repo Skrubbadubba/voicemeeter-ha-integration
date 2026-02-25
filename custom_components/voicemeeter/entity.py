@@ -16,7 +16,7 @@ class VoicemeeterEntity(CoordinatorEntity[VoicemeeterCoordinator]):
 
     @property
     def available(self) -> bool:
-        return self.coordinator.data is not None
+        return self.coordinator.connected
 
     @property
     def device_info(self) -> DeviceInfo:
