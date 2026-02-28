@@ -25,5 +25,5 @@ class VoicemeeterEntity(CoordinatorEntity[VoicemeeterCoordinator]):
             identifiers={(DOMAIN, self._entry_id)},
             name=f"Voicemeeter {self.coordinator.config_entry.title}",
             manufacturer="VB-Audio",
-            model=kind.capitalize(),
+            model="Voicemeeter Remote",
         )
