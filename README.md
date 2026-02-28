@@ -1,6 +1,6 @@
 # ha-voicemeeter
 
-A Home Assistant custom integration that exposes [Voicemeeter](https://vb-audio.com/Voicemeeter/) as controllable entities in HA. A separate Windows (companion app)[https://github.com/Skrubbadubba/voicemeeter-ha-windows-companion] bridges the Voicemeeter DLL to the network via WebSocket. This integration will not connect to anything unless you got the companion app!
+A Home Assistant custom integration that exposes [Voicemeeter](https://vb-audio.com/Voicemeeter/) as controllable entities in HA. A separate Windows [companion app](https://github.com/Skrubbadubba/voicemeeter-ha-windows-companion) bridges the Voicemeeter DLL to the network via WebSocket. This integration will not connect to anything unless you got the companion app!
 
 
 
