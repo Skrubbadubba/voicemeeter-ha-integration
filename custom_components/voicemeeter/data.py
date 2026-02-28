@@ -41,6 +41,7 @@ class BusData:
 @dataclass
 class VoicemeeterState:
     kind: str
+    protocol: str
     strips: list[StripData] = field(default_factory=list)
     buses: list[BusData] = field(default_factory=list)
 
@@ -102,7 +103,7 @@ def parse_state_message(msg: dict[str, Any]) -> VoicemeeterState:
         for b in msg.get("buses", [])
     ]
 
-    return VoicemeeterState(kind=msg["kind"], strips=strips, buses=buses)
+    return VoicemeeterState(kind=msg["kind"], protocol=msg["protocol"], strips=strips, buses=buses)
 
 
 def apply_update_message(
@@ -136,7 +137,7 @@ def apply_update_message(
             _apply_to_bus(b, param, value) if b.index == index else b for b in new_buses
         ]
 
-    return VoicemeeterState(kind=state.kind, strips=new_strips, buses=new_buses)
+    return VoicemeeterState(kind=state.kind, protocol=state.protocol, strips=new_strips, buses=new_buses)
 
 
 def _apply_to_strip(strip: StripData, param: str, value: Any) -> StripData:

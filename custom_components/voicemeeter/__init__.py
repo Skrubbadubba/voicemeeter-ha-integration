@@ -1,5 +1,3 @@
-"""The Voicemeeter integration."""
-
 from __future__ import annotations
 
 import asyncio
@@ -7,9 +5,9 @@ import asyncio
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryNotReady, ConfigEntryError
 
-from .const import CONF_HOST, CONF_PORT, DEFAULT_PORT, LOGGER
+from .const import CONF_HOST, CONF_PORT, DEFAULT_PORT, LOGGER, SUPPORTED_PROTOCOL_MAJOR
 from .coordinator import VoicemeeterCoordinator
 from .data import VoicemeeterRuntimeData
 from .websocket import VoicemeeterWebSocket
@@ -36,7 +34,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ws.start(),
         name="voicemeeter_websocket",
     )
-    entry.async_on_unload(ws_task.cancel)
+    async def _cancel_ws_task() -> None:
+        ws_task.cancel()
+
+    entry.async_on_unload(_cancel_ws_task)
     entry.async_on_unload(ws.stop)
 
     # Wait until the coordinator has real state (set by first state message)
@@ -47,6 +48,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             _wait_for_state(coordinator),
             timeout=FIRST_STATE_TIMEOUT,
         )
+        current_protocol = coordinator.data.protocol
+        _check_protocol(current_protocol)
     except TimeoutError:
         LOGGER.warning(
             "Voicemeeter companion app did not send state within %ss — "
@@ -65,6 +68,17 @@ async def _wait_for_state(coordinator: VoicemeeterCoordinator) -> None:
     """Block until coordinator.data is populated."""
     while coordinator.data is None:
         await asyncio.sleep(0.1)
+
+def _check_protocol(current_protocol: str) -> None:
+    
+    current_major = current_protocol.split(".")[0]
+
+    if current_major != SUPPORTED_PROTOCOL_MAJOR:
+        raise ConfigEntryError(
+            f"Unsupported protocol version {current_protocol}. "
+            f"This integration requires protocol {SUPPORTED_PROTOCOL_MAJOR}.x. "
+            "Update your companion app or the integration."
+        )
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

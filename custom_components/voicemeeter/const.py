@@ -8,6 +8,8 @@ CONF_PORT = "port"
 CONF_KIND = "kind"
 CONF_NAME = "name"
 
+SUPPORTED_PROTOCOL_MAJOR = "1"
+
 DEFAULT_PORT = 27001
 DEFAULT_KIND = "banana"
 

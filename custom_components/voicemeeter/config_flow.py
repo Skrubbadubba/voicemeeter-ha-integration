@@ -37,9 +37,6 @@ class VoicemeeterConfigFlow(ConfigFlow, domain=DOMAIN):
                 vol.Optional(CONF_NAME, default=""): str,
                 vol.Required(CONF_HOST, default="192.168.1.63"): str,
                 vol.Required(CONF_PORT, default=DEFAULT_PORT): int,
-                vol.Required(CONF_KIND, default=DEFAULT_KIND): vol.In(
-                    VOICEMEETER_KINDS
-                ),
             }
         )
 

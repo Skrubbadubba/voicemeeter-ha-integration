@@ -4,6 +4,8 @@ from typing import Any
 
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.config_entries import ConfigEntryDisabler
 
 from .const import DOMAIN, LOGGER
 from .data import VoicemeeterState, apply_update_message, parse_state_message
@@ -57,11 +59,29 @@ class VoicemeeterCoordinator(DataUpdateCoordinator[VoicemeeterState | None]):
             LOGGER.debug(f"Recieved state: {msg}")
             old_state = self.data
             old_kind = old_state.kind if old_state else None
+            old_protocol = old_state.protocol if old_state else None
+
             parsed_new_state = parse_state_message(msg)
             self.async_set_updated_data(parsed_new_state)
+
             if old_kind and old_kind != parsed_new_state.kind:
-                self.hass.config_entries.async_reload(self.config_entry.entry_id)
                 LOGGER.debug(f"New kind ({parsed_new_state.kind}) recieved, reloading entry")
+                self.hass.async_create_task(
+                    self.hass.config_entries.async_reload(self.config_entry.entry_id)
+                )
+
+            if old_protocol and old_protocol != parsed_new_state.protocol:
+                old_major_ver = old_protocol.split(".")[0]
+                new_major_ver = parsed_new_state.protocol.split(".")[0]
+                if old_major_ver != new_major_ver:
+                    LOGGER.warning("Protocol major version change detected, triggering reload")
+                    self.hass.async_create_task(
+                        self.hass.config_entries.async_reload(self.config_entry.entry_id)
+                    )
+                    return
+
+                # TODO: Notify user
+                pass
 
         elif msg_type == "update":
             LOGGER.debug(f"Voicemeeter: recieved update message: {msg}")
