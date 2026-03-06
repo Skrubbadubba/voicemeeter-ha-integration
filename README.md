@@ -23,13 +23,22 @@ To run it automatically on startup:
 2. Hit <kbd>WIN</kbd> + <kbd>r</kbd> and enter `shell:startup`.
 3. Add the shortcut to the folder
 
-### Integration (Home Assistant)
+### Integration (Home Assistant) via HACS
 
-1. Copy the `custom_components/voicemeeter` folder into your HA `custom_components` directory.
-2. Restart Home Assistant.
-3. Go to **Settings → Integrations → Add Integration** and search for **Voicemeeter**.
-4. ***(Optional):*** Enter a name
-5. Enter the IP address of your Windows PC and the port (default: 27001). Note the port on the companion app cannot be changed, so do not change the default.
+1. Go to the HACS tabs
+2. Click three dots menu in top right corner
+3. Click "custom archives"
+4. Paste in [this repo](https://github.com/Skrubbadubba/voicemeeter-ha-integration), and select "integration" as the repository type
+
+> #### (Or directly)
+>
+> 1. Copy the `custom_components/voicemeeter` folder into your HA `custom_components` directory.
+> 2. Restart Home Assistant.
+
+
+5. Go to **Settings → Integrations → Add Integration** and search for **Voicemeeter**.
+6. ***(Optional):*** Enter a name
+7. Enter the IP address of your Windows PC and the port (default: 27001). Note the port on the companion app cannot be changed for now, so do not change the default.
 
 ## Entities
 
